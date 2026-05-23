@@ -1,30 +1,18 @@
 import { Tabs } from 'expo-router';
 import { View, Text, StyleSheet } from 'react-native';
 
-type TabIconProps = {
+function TabIcon({ emoji, label, focused, color }: {
   readonly emoji: string;
   readonly label: string;
   readonly focused: boolean;
   readonly color: string;
-};
-
-function TabIcon({ emoji, label, focused, color }: TabIconProps) {
+}) {
   return (
-    <View style={[styles.tabIcon, focused && styles.tabIconFocused]}>
+    <View style={styles.tabIcon}>
       <Text style={styles.emoji}>{emoji}</Text>
       {focused && <Text style={[styles.tabLabel, { color }]}>{label}</Text>}
     </View>
   );
-}
-
-function createTabBarIcon(emoji: string, label: string, color: string) {
-  return ({ focused, color: iconColor }: { focused: boolean; color: string }) => (
-    <TabIcon emoji={emoji} label={label} focused={focused} color={iconColor} />
-  );
-}
-
-function createEmojiIcon(emoji: string) {
-  return ({ color }: { color: string }) => <Text style={{ color }}>{emoji}</Text>;
 }
 
 export default function TabLayout() {
@@ -44,42 +32,54 @@ export default function TabLayout() {
         name="mis-personajes"
         options={{
           title: 'Mis personajes',
-          tabBarIcon: createEmojiIcon('⚔️'),
+          tabBarIcon: ({ color }) => (
+            <Text style={{ color: color as string }}>⚔️</Text>
+          ),
         }}
       />
       <Tabs.Screen
         name="saintseiya"
         options={{
           title: 'Saint Seiya',
-          tabBarIcon: createTabBarIcon('🛡️', 'Seiya', '#4A90E2'),
+          tabBarIcon: ({ focused, color }) => (
+            <TabIcon emoji="🛡️" label="Seiya" focused={focused} color={color as string} />
+          ),
         }}
       />
       <Tabs.Screen
         name="hunterxhunter"
         options={{
           title: 'Hunter x Hunter',
-          tabBarIcon: createTabBarIcon('🎴', 'HxH', '#E2A84A'),
+          tabBarIcon: ({ focused, color }) => (
+            <TabIcon emoji="🎴" label="HxH" focused={focused} color={color as string} />
+          ),
         }}
       />
       <Tabs.Screen
         name="onepiece"
         options={{
           title: 'One Piece',
-          tabBarIcon: createTabBarIcon('☠️', 'One Piece', '#E24A4A'),
+          tabBarIcon: ({ focused, color }) => (
+            <TabIcon emoji="☠️" label="One Piece" focused={focused} color={color as string} />
+          ),
         }}
       />
       <Tabs.Screen
         name="naruto"
         options={{
           title: 'Naruto',
-          tabBarIcon: createTabBarIcon('🍥', 'Naruto', '#FF6B00'),
+          tabBarIcon: ({ focused, color }) => (
+            <TabIcon emoji="🍥" label="Naruto" focused={focused} color={color as string} />
+          ),
         }}
       />
       <Tabs.Screen
         name="resumen"
         options={{
           title: 'Resumen',
-          tabBarIcon: createTabBarIcon('📋', 'Resumen', '#9B59B6'),
+          tabBarIcon: ({ focused, color }) => (
+            <TabIcon emoji="📋" label="Resumen" focused={focused} color={color as string} />
+          ),
         }}
       />
     </Tabs>
@@ -100,10 +100,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: 6,
   },
-  tabIconFocused: {},
-  emoji: {
-    fontSize: 22,
-  },
+  emoji: { fontSize: 22 },
   tabLabel: {
     fontSize: 10,
     fontWeight: '600',
