@@ -1,7 +1,13 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import {
+  View, Text, TouchableOpacity, StyleSheet,
+  ScrollView, Alert
+} from 'react-native';
+import { useRouter } from 'expo-router';
 import { useAnimeStore } from '../../store/animeStore';
 import ImageModal from '../../components/ImageModal';
+import { logout, getCurrentUser } from '../../services/auth';
+import { useEffect } from 'react';
 
 const CATEGORIES = [
   { id: 'saintseiya', label: 'Saint Seiya', emoji: '⚡' },
@@ -11,12 +17,21 @@ const CATEGORIES = [
 ];
 
 export default function ResumenTab() {
+  const router = useRouter();
   const lastCharacters = useAnimeStore((s) => s.lastCharacters);
+  const clearAll = useAnimeStore((s) => s.clearAll);
   const [modalImages, setModalImages] = useState<string[]>([]);
   const [modalName, setModalName] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
+  const [userName, setUserName] = useState('');
 
-  // Reúne todas las imágenes de todos los personajes consultados
+  // Cargar nombre del usuario
+  useEffect(() => {
+    getCurrentUser().then(user => {
+      if (user) setUserName(user.name || user.email);
+    });
+  }, []);
+
   const allImages = Object.values(lastCharacters)
     .filter(Boolean)
     .flatMap((c: any) => c?.images ?? []);
@@ -29,9 +44,42 @@ export default function ResumenTab() {
 
   const hasAny = Object.values(lastCharacters).some(Boolean);
 
+  // Cerrar sesión
+  const handleLogout = () => {
+    Alert.alert(
+      'Cerrar sesión',
+      '¿Seguro que quieres cerrar sesión?',
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Cerrar sesión',
+          style: 'destructive',
+          onPress: async () => {
+            await logout();
+            clearAll();
+            router.replace('/');
+          },
+        },
+      ]
+    );
+  };
+
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.title}>📋 Resumen</Text>
+
+      {/* ── Header con usuario y botón logout ── */}
+      <View style={styles.header}>
+        <View>
+          <Text style={styles.title}>📋 Resumen</Text>
+          {!!userName && (
+            <Text style={styles.userName}>👤 {userName}</Text>
+          )}
+        </View>
+        <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
+          <Text style={styles.logoutText}>Cerrar sesión</Text>
+        </TouchableOpacity>
+      </View>
+
       <Text style={styles.sub}>Últimos personajes consultados por categoría</Text>
 
       {!hasAny && (
@@ -56,7 +104,9 @@ export default function ResumenTab() {
                 style={styles.imgBtn}
                 onPress={() => openModal(char.images!, char.name)}
               >
-                <Text style={styles.imgBtnText}>Ver imágenes ({char.images.length})</Text>
+                <Text style={styles.imgBtnText}>
+                  Ver imágenes ({char.images.length})
+                </Text>
               </TouchableOpacity>
             )}
           </View>
@@ -80,13 +130,25 @@ export default function ResumenTab() {
         characterName={modalName}
         onClose={() => setModalVisible(false)}
       />
+
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#0a0a0f' },
-  title: { fontSize: 26, fontWeight: 'bold', color: '#fff', padding: 20, paddingBottom: 4 },
+  header: {
+    flexDirection: 'row', justifyContent: 'space-between',
+    alignItems: 'center', padding: 20, paddingBottom: 4,
+  },
+  title: { fontSize: 26, fontWeight: 'bold', color: '#fff' },
+  userName: { color: '#7c3aed', fontSize: 12, marginTop: 4 },
+  logoutBtn: {
+    backgroundColor: '#2a1e1e', borderRadius: 8,
+    paddingHorizontal: 14, paddingVertical: 8,
+    borderWidth: 1, borderColor: '#ef4444',
+  },
+  logoutText: { color: '#ef4444', fontWeight: 'bold', fontSize: 13 },
   sub: { color: '#555', fontSize: 12, paddingHorizontal: 20, marginBottom: 16 },
   empty: { padding: 40, alignItems: 'center' },
   emptyText: { color: '#444', textAlign: 'center', lineHeight: 24 },
