@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View, Text, TouchableOpacity, StyleSheet,
   ScrollView, Alert
@@ -7,7 +7,6 @@ import { useRouter } from 'expo-router';
 import { useAnimeStore } from '../../store/animeStore';
 import ImageModal from '../../components/ImageModal';
 import { logout, getCurrentUser } from '../../services/auth';
-import { useEffect } from 'react';
 
 const CATEGORIES = [
   { id: 'saintseiya', label: 'Saint Seiya', emoji: '⚡' },
@@ -25,7 +24,6 @@ export default function ResumenTab() {
   const [modalVisible, setModalVisible] = useState(false);
   const [userName, setUserName] = useState('');
 
-  // Cargar nombre del usuario
   useEffect(() => {
     getCurrentUser().then(user => {
       if (user) setUserName(user.name || user.email);
@@ -44,7 +42,6 @@ export default function ResumenTab() {
 
   const hasAny = Object.values(lastCharacters).some(Boolean);
 
-  // Cerrar sesión
   const handleLogout = () => {
     Alert.alert(
       'Cerrar sesión',
@@ -55,9 +52,14 @@ export default function ResumenTab() {
           text: 'Cerrar sesión',
           style: 'destructive',
           onPress: async () => {
-            await logout();
-            clearAll();
-            router.replace('/');
+            try {
+              await logout();
+              clearAll();
+            } catch (e) {
+              console.log('Error al cerrar sesión:', e);
+            } finally {
+              router.replace('/');
+            }
           },
         },
       ]

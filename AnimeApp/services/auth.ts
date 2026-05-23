@@ -5,7 +5,6 @@ const AUTH_URL = 'https://auth-service-production-43a0.up.railway.app';
 const TOKEN_KEY = 'anime_jwt_token';
 const USER_KEY = 'anime_user';
 
-// Guardar dato según plataforma
 async function saveItem(key: string, value: string) {
   if (Platform.OS === 'web') {
     localStorage.setItem(key, value);
@@ -14,7 +13,6 @@ async function saveItem(key: string, value: string) {
   }
 }
 
-// Leer dato según plataforma
 async function getItem(key: string): Promise<string | null> {
   if (Platform.OS === 'web') {
     return localStorage.getItem(key);
@@ -22,7 +20,6 @@ async function getItem(key: string): Promise<string | null> {
   return SecureStore.getItemAsync(key);
 }
 
-// Borrar dato según plataforma
 async function removeItem(key: string) {
   if (Platform.OS === 'web') {
     localStorage.removeItem(key);
@@ -56,8 +53,14 @@ export async function login(email: string, password: string) {
 }
 
 export async function logout() {
-  await removeItem(TOKEN_KEY);
-  await removeItem(USER_KEY);
+  try {
+    await removeItem(TOKEN_KEY);
+    await removeItem(USER_KEY);
+  } catch (e) {
+    if (Platform.OS === 'web') {
+      localStorage.clear();
+    }
+  }
 }
 
 export async function getToken(): Promise<string | null> {
