@@ -1,7 +1,7 @@
 import * as SecureStore from 'expo-secure-store';
 
 // Cambia esto cuando despliegues el auth-service en Railway
-const AUTH_URL = 'auth-service-production-43a0.up.railway.app';
+const AUTH_URL = 'https://auth-service-production-43a0.up.railway.app';
 
 const TOKEN_KEY = 'anime_jwt_token';
 const USER_KEY = 'anime_user';

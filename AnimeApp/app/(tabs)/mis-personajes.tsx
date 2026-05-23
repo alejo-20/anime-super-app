@@ -7,8 +7,9 @@ import { authHeaders } from '../../services/auth';
 
 // Cambia esto por tu IP local cuando pruebes con Docker
 // o por la URL de Railway cuando despliegues
-const CONTENT_URL = 'http://192.168.1.100:5000';
-
+const CONTENT_URL = __DEV__
+  ? 'http://192.168.1.100:5000'
+  : 'https://user-content-service-production.up.railway.app';
 type Character = {
   id: number;
   name: string;
