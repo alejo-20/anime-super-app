@@ -1,6 +1,5 @@
 import * as SecureStore from 'expo-secure-store';
 
-// Cambia esto cuando despliegues el auth-service en Railway
 const AUTH_URL = 'https://auth-service-production-43a0.up.railway.app';
 
 const TOKEN_KEY = 'anime_jwt_token';
@@ -25,7 +24,6 @@ export async function login(email: string, password: string) {
   });
   const json = await res.json();
   if (!res.ok) throw new Error(json.error || 'Error al iniciar sesión');
-  // Guardar token de forma segura en el teléfono
   await SecureStore.setItemAsync(TOKEN_KEY, json.token);
   await SecureStore.setItemAsync(USER_KEY, JSON.stringify(json.user));
   return json;
@@ -45,7 +43,6 @@ export async function getCurrentUser() {
   return raw ? JSON.parse(raw) : null;
 }
 
-// Para llamadas autenticadas: añade el token en la cabecera
 export async function authHeaders(): Promise<HeadersInit> {
   const token = await getToken();
   return token ? { Authorization: `Bearer ${token}` } : {};

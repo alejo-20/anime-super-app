@@ -1,5 +1,4 @@
-// URL de tu API en Railway (ya está desplegada)
-const BASE_URL = 'anime-api-production-57cf.up.railway.app';
+const BASE_URL = 'https://anime-api-production-57cf.up.railway.app';
 
 export type Character = {
   id: number;
@@ -10,7 +9,6 @@ export type Character = {
   images_count?: number;
 };
 
-// Obtener todos los personajes de una categoría (sin imágenes)
 export async function getCharacters(category: string): Promise<Character[]> {
   const res = await fetch(`${BASE_URL}/${category}`);
   if (!res.ok) throw new Error('Error al cargar personajes');
@@ -18,7 +16,6 @@ export async function getCharacters(category: string): Promise<Character[]> {
   return json.data;
 }
 
-// Buscar un personaje por nombre exacto (con 4 imágenes reales)
 export async function getCharacterWithImages(
   category: string,
   name: string
@@ -32,7 +29,6 @@ export async function getCharacterWithImages(
   return json.data;
 }
 
-// Búsqueda parcial por nombre
 export async function searchCharacter(
   category: string,
   query: string
