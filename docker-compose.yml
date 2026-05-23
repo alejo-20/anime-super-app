@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  # ── Tu API ya existente (anime-service) ──────────────────
+  anime-service:
+    build: ./anime-api
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+    restart: unless-stopped
+
+  # ── Servicio de autenticación ─────────────────────────────
+  auth-service:
+    build: ./auth-service
+    ports:
+      - "4000:4000"
+    environment:
+      - PORT=4000
+      - JWT_SECRET=mi_secreto_cambiar_en_produccion
+    restart: unless-stopped
+
+  # ── Servicio CRUD de usuario ──────────────────────────────
+  user-content-service:
+    build: ./user-content-service
+    ports:
+      - "5000:5000"
+    environment:
+      - PORT=5000
+      - JWT_SECRET=mi_secreto_cambiar_en_produccion
+    restart: unless-stopped
+
+  # ── PostgreSQL ────────────────────────────────────────────
+  postgres:
+    image: postgres:15-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: anime
+      POSTGRES_PASSWORD: anime123
+      POSTGRES_DB: animedb
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  # ── SonarQube para calidad de código ─────────────────────
+  sonarqube:
+    image: sonarqube:community
+    ports:
+      - "9000:9000"
+    environment:
+      SONAR_ES_BOOTSTRAP_CHECKS_DISABLE: "true"
+
+volumes:
+  pgdata:
