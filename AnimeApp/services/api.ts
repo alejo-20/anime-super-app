@@ -1,5 +1,5 @@
 // URL de tu API en Railway (ya está desplegada)
-const BASE_URL = 'https://anime-api-production-5837.up.railway.app';
+const BASE_URL = 'anime-api-production-57cf.up.railway.app';
 
 export type Character = {
   id: number;
