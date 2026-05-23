@@ -1,9 +1,35 @@
 import * as SecureStore from 'expo-secure-store';
+import { Platform } from 'react-native';
 
 const AUTH_URL = 'https://auth-service-production-43a0.up.railway.app';
-
 const TOKEN_KEY = 'anime_jwt_token';
 const USER_KEY = 'anime_user';
+
+// Guardar dato según plataforma
+async function saveItem(key: string, value: string) {
+  if (Platform.OS === 'web') {
+    localStorage.setItem(key, value);
+  } else {
+    await SecureStore.setItemAsync(key, value);
+  }
+}
+
+// Leer dato según plataforma
+async function getItem(key: string): Promise<string | null> {
+  if (Platform.OS === 'web') {
+    return localStorage.getItem(key);
+  }
+  return SecureStore.getItemAsync(key);
+}
+
+// Borrar dato según plataforma
+async function removeItem(key: string) {
+  if (Platform.OS === 'web') {
+    localStorage.removeItem(key);
+  } else {
+    await SecureStore.deleteItemAsync(key);
+  }
+}
 
 export async function register(email: string, password: string, name: string) {
   const res = await fetch(`${AUTH_URL}/register`, {
@@ -24,22 +50,22 @@ export async function login(email: string, password: string) {
   });
   const json = await res.json();
   if (!res.ok) throw new Error(json.error || 'Error al iniciar sesión');
-  await SecureStore.setItemAsync(TOKEN_KEY, json.token);
-  await SecureStore.setItemAsync(USER_KEY, JSON.stringify(json.user));
+  await saveItem(TOKEN_KEY, json.token);
+  await saveItem(USER_KEY, JSON.stringify(json.user));
   return json;
 }
 
 export async function logout() {
-  await SecureStore.deleteItemAsync(TOKEN_KEY);
-  await SecureStore.deleteItemAsync(USER_KEY);
+  await removeItem(TOKEN_KEY);
+  await removeItem(USER_KEY);
 }
 
 export async function getToken(): Promise<string | null> {
-  return SecureStore.getItemAsync(TOKEN_KEY);
+  return getItem(TOKEN_KEY);
 }
 
 export async function getCurrentUser() {
-  const raw = await SecureStore.getItemAsync(USER_KEY);
+  const raw = await getItem(USER_KEY);
   return raw ? JSON.parse(raw) : null;
 }
 
