@@ -43,7 +43,7 @@ const animeData = {
     { id: 8,  name: 'Franky',  age: '36', power: 'Cuerpo Cyborg',     malId: 314   },
     { id: 9,  name: 'Brook',   age: '90', power: 'Yomi Yomi no Mi',   malId: 318   },
     { id: 10, name: 'Shanks',  age: '39', power: 'Haki del Rey',      malId: 306   },
-  ],
+  ], 
 
   naruto: [
     { id: 1,  name: 'Naruto',   age: '17', power: 'Rasengan / Modo Sabio',    malId: 17   },

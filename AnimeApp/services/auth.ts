@@ -1,7 +1,9 @@
 import * as SecureStore from 'expo-secure-store';
 import { Platform } from 'react-native';
 
-const AUTH_URL = 'https://auth-service-production-43a0.up.railway.app';
+const AUTH_URL = __DEV__
+  ? 'http://localhost:4000'
+  : 'https://auth-service-production-43a0.up.railway.app';
 const TOKEN_KEY = 'anime_jwt_token';
 const USER_KEY = 'anime_user';
 
